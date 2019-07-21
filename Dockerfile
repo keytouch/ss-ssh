@@ -9,8 +9,8 @@ COPY entrypoint.sh /entrypoint.sh
 RUN apk add --no-cache openssh-server supervisor \
     && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
     && apk add --no-cache --virtual .build-deps curl \
-    && curl -L https://github.com`curl -L https://github.com/xtaci/kcptun/releases/latest | egrep -o '<a\shref.+kcptun-linux-amd64.+\.tar\.gz' | sed 's/<a href="//g'` \
-    | tar x -zC /usr/local/bin server_linux_amd64 \
+    && curl -L https://github.com`curl -L https://github.com/xtaci/kcptun/releases/latest | grep -oE '/\S+?kcptun-linux-amd64\S+?\.tar\.gz'` \
+    | tar -xzC /usr/local/bin server_linux_amd64 \
     && mv /usr/local/bin/server_linux_amd64 /usr/local/bin/kcpserver_linux_amd64 \
     && apk del .build-deps \
     && chmod +x /entrypoint.sh
@@ -20,7 +20,9 @@ ENV SS_SERVER_ADDR=0.0.0.0 \
     SS_PASSWORD=123456 \
     SS_METHOD=aes-256-gcm \
     SS_TIMEOUT=300 \
-    KCP_KEY=123456 \
+    SS_DNS=8.8.8.8,8.8.4.4 \
+    KCP_PORT=29900 \
+    KCP_KEY="it's a secrect" \
     KCP_CRYPT=aes \
     KCP_MODE=fast \
     KCP_MTU=1350 \
