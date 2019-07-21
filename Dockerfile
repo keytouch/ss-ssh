@@ -26,8 +26,8 @@ ENV SS_SERVER_ADDR=0.0.0.0 \
     KCP_CRYPT=aes \
     KCP_MODE=fast \
     KCP_MTU=1350 \
-    KCP_SNDWND=256 \
-    KCP_RCVWND=256 \
+    KCP_SNDWND=1024 \
+    KCP_RCVWND=1024 \
     KCP_DS=10 \
     KCP_PS=3
 
