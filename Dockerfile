@@ -7,12 +7,13 @@ COPY supervisord.conf /etc/supervisord.conf
 COPY entrypoint.sh /entrypoint.sh
 COPY web_info.py /web_info.py
 
-RUN apk add --no-cache openssh-server supervisor \
+RUN apk add --no-cache openssh-server supervisor curl python2 \
     && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
-    && apk add --no-cache --virtual .build-deps curl \
     && curl -L https://github.com`curl -L https://github.com/xtaci/kcptun/releases/latest | grep -oE '/\S+?kcptun-linux-amd64\S+?\.tar\.gz'` \
     | tar -xzC /usr/local/bin server_linux_amd64 \
     && mv /usr/local/bin/server_linux_amd64 /usr/local/bin/kcpserver_linux_amd64 \
+    && apk add --no-cache --virtual .build-deps py2-pip \
+    && pip install web.py \
     && apk del .build-deps \
     && chmod +x /entrypoint.sh /web_info.py
 
