@@ -5,6 +5,7 @@ USER root
 
 COPY supervisord.conf /etc/supervisord.conf
 COPY entrypoint.sh /entrypoint.sh
+COPY web_info.py /web_info.py
 
 RUN apk add --no-cache openssh-server supervisor \
     && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
@@ -13,7 +14,7 @@ RUN apk add --no-cache openssh-server supervisor \
     | tar -xzC /usr/local/bin server_linux_amd64 \
     && mv /usr/local/bin/server_linux_amd64 /usr/local/bin/kcpserver_linux_amd64 \
     && apk del .build-deps \
-    && chmod +x /entrypoint.sh
+    && chmod +x /entrypoint.sh /web_info.py
 
 ENV SS_SERVER_ADDR=0.0.0.0 \
     SS_PORT=8388 \
@@ -31,6 +32,6 @@ ENV SS_SERVER_ADDR=0.0.0.0 \
     KCP_DS=10 \
     KCP_PS=3
 
-EXPOSE 22 8388 29900/udp
+EXPOSE 8080 22 8388 29900/udp
 
 CMD [ "/entrypoint.sh" ]
