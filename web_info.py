@@ -31,15 +31,15 @@ class ServiceInfo:
         return self.data
 
     def get_portmapping(self):
-        portmapping = []
+        portmappings = []
         data = self.get_data()
         if data is not None:  # if no error
             for instance in data['data']['attributes']['port-mappings']:
                 for port_mapping in instance:
                     if port_mapping['container-port'] == 22 or port_mapping['container-port'] == 8080:
                         continue
-                    portmapping.append(port_mapping)
-        return portmapping
+                    portmappings.append(port_mapping)
+        return portmappings
 
 
 class info:
