@@ -13,7 +13,7 @@ RUN apk add --no-cache openssh-server supervisor python2 \
     && curl -L https://github.com`curl -L https://github.com/xtaci/kcptun/releases/latest | grep -oE '/\S+?kcptun-linux-amd64\S+?\.tar\.gz'` \
     | tar -xzC /usr/local/bin server_linux_amd64 \
     && mv /usr/local/bin/server_linux_amd64 /usr/local/bin/kcpserver_linux_amd64 \
-    && pip install web.py requests \
+    && pip install --no-cache-dir web.py requests \
     && apk del .build-deps \
     && chmod +x /entrypoint.sh /web_info.py
 
