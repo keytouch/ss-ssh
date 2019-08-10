@@ -11,7 +11,7 @@ ttl = datetime.timedelta(minutes=5)
 
 class ServiceInfo:
     def __init__(self, url):
-        self.data = None
+        self.data = []
         self.url = url
         self.expir = datetime.datetime(1, 1, 1, 0, 0, 0, 0)
 
@@ -22,31 +22,31 @@ class ServiceInfo:
             print(e)
         else:
             if r.status_code == requests.codes.ok:
-                self.data = r.json()
+                data = r.json()
                 self.expir = datetime.datetime.now() + ttl
+                try:
+                    data = data['data']['attributes']['port-mappings']
+                except StandardError as e:
+                    print(type(e).__name__ + ': ' + str(e))
+                else:  # if no error
+                    if data is not None:
+                        for instance in data:
+                            for port_mapping in instance:
+                                if port_mapping['container-port'] == 22 or port_mapping['container-port'] == 8080:
+                                    continue
+                                self.data.append(port_mapping)
 
     def get_data(self):
-        if self.expir < datetime.datetime.now():
+        if self.expir < datetime.datetime.now() or self.data == []:
             self.update()
         return self.data
-
-    def get_portmapping(self):
-        portmappings = []
-        data = self.get_data()
-        if data is not None:  # if no error
-            for instance in data['data']['attributes']['port-mappings']:
-                for port_mapping in instance:
-                    if port_mapping['container-port'] == 22 or port_mapping['container-port'] == 8080:
-                        continue
-                    portmappings.append(port_mapping)
-        return portmappings
 
 
 class info:
     def GET(self):
         web.header('Content-Type', 'application/json; charset=utf-8')
-        portmapping = service_info.get_portmapping()
-        return json.dumps(portmapping, separators=(',', ':'))
+        data = service_info.get_data()
+        return json.dumps(data, separators=(',', ':'))
 
 
 urls = (
