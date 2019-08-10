@@ -21,24 +21,25 @@ class ServiceInfo:
         except requests.exceptions.RequestException as e:
             print(e)
         else:
-            if r.status_code == requests.codes.ok:
-                data = r.json()
-                self.data = []
-                self.expir = datetime.datetime.now() + ttl
-                try:
-                    data = data['data']['attributes']['port-mappings']
-                except StandardError as e:
-                    print(type(e).__name__ + ': ' + str(e))
-                else:  # if no error
-                    if data is not None:
-                        for instance in data:
-                            for port_mapping in instance:
-                                if port_mapping['container-port'] == 22 or port_mapping['container-port'] == 8080:
-                                    continue
-                                self.data.append(port_mapping)
+            if r.status_code != requests.codes.ok:
+                return
+            data = r.json()
+            try:
+                data = data['data']['attributes']['port-mappings']
+            except StandardError as e:
+                print(type(e).__name__ + ': ' + str(e))
+            else:  # if no error
+                if data is not None:
+                    self.data = []
+                    self.expir = datetime.datetime.now() + ttl
+                    for instance in data:
+                        for port_mapping in instance:
+                            if port_mapping['container-port'] == 22 or port_mapping['container-port'] == 8080:
+                                continue
+                            self.data.append(port_mapping)
 
     def get_data(self):
-        if self.expir < datetime.datetime.now() or self.data == []:
+        if self.expir < datetime.datetime.now():
             self.update()
         return self.data
 
