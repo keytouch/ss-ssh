@@ -23,6 +23,7 @@ class ServiceInfo:
         else:
             if r.status_code == requests.codes.ok:
                 data = r.json()
+                self.data = []
                 self.expir = datetime.datetime.now() + ttl
                 try:
                     data = data['data']['attributes']['port-mappings']
