@@ -47,6 +47,7 @@ class ServiceInfo:
 class info:
     def GET(self):
         web.header('Content-Type', 'application/json; charset=utf-8')
+        web.header('Cache-Control', 'no-store')
         data = service_info.get_data()
         return json.dumps(data, separators=(',', ':'))
 
