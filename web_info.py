@@ -26,7 +26,7 @@ class ServiceInfo:
             data = r.json()
             try:
                 data = data['data']['attributes']['port-mappings']
-            except StandardError as e:
+            except Exception as e:
                 print(type(e).__name__ + ': ' + str(e))
             else:  # if no error
                 if data is not None:
