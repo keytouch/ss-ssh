@@ -6,8 +6,7 @@ ENV KCP_VER 20200103
 
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static /tini
 COPY --from=shadowsocks/shadowsocks-libev /usr/bin/ss-* /usr/bin/
-COPY run.sh /
-COPY web_info.go /
+COPY run.sh web_info.go /
 
 RUN apk add --no-cache \
     ca-certificates \
