@@ -54,6 +54,7 @@ func update() {
 }
 
 func web_info(w http.ResponseWriter, req *http.Request) {
+	log.Printf("From: %s %s", req.RemoteAddr, req.Header.Get("X-Forwarded-For"))
 	if fetchTime.IsZero() || fetchTime.Add(expire).Before(time.Now()) {
 		update()
 	}
