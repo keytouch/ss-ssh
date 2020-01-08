@@ -2,7 +2,7 @@
 ssh-keygen -A
 echo "root:${RootPassword:-admin}" | chpasswd
 
-/web_info &
+GOGC=20 /web_info &
 
 GOGC=20 kcpserver_linux_amd64 -l :$KCP_PORT -t 127.0.0.1:$SS_PORT --crypt $KCP_CRYPT --key "$KCP_KEY" \
     --mode $KCP_MODE --mtu $KCP_MTU --sndwnd $KCP_SNDWND --rcvwnd $KCP_RCVWND \

@@ -1,12 +1,18 @@
+FROM golang:alpine AS go-builder
+WORKDIR /go/src/web_info
+COPY web_info.go .
+RUN go get -d -v ./...
+RUN go install -v ./...
+
 FROM alpine
 LABEL maintainer="keytouch"
 
 ENV TINI_VERSION v0.18.0
-ENV KCP_VER 20200103
+ENV KCP_VERSION 20200103
 
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static /tini
 COPY --from=shadowsocks/shadowsocks-libev /usr/bin/ss-* /usr/bin/
-COPY run.sh web_info.go /
+COPY --from=go-builder /go/bin/web_info /
+COPY run.sh /
 
 RUN apk add --no-cache \
     ca-certificates \
@@ -16,11 +22,11 @@ RUN apk add --no-cache \
     | sort -u) \
     openssh-server \
     && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
-    && apk add --no-cache --virtual .build-deps go curl \
-    && curl -L https://github.com/xtaci/kcptun/releases/download/v${KCP_VER}/kcptun-linux-amd64-${KCP_VER}.tar.gz \
+    && apk add --no-cache --virtual .build-deps curl \
+    && curl -L -o /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static \
+    && curl -L https://github.com/xtaci/kcptun/releases/download/v${KCP_VERSION}/kcptun-linux-amd64-${KCP_VERSION}.tar.gz \
     | tar -xzC /usr/local/bin server_linux_amd64 \
     && mv /usr/local/bin/server_linux_amd64 /usr/local/bin/kcpserver_linux_amd64 \
-    && go build web_info.go \
     && apk del .build-deps \
     && chmod +x /run.sh /tini
 
